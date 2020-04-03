@@ -1,6 +1,11 @@
 
 import pytz
 import pandas as pd
+import pycountry
+
+
+def get_alpha2(alpha3):
+    return pycountry.countries.get(alpha_3=alpha3).alpha_2
 
 
 def localize(df, country, ambiguous=None):
@@ -34,7 +39,9 @@ def upsample_df(df, resolution):
 
     # Temporally append the DataFrame by one low-resolution value
     df.loc[df.index[-1] + freq, :] = df.iloc[-1, :]
-
+    dtidx = pd.date_range(str(df.index[0]),str(df.index[-1]), freq=freq)
+    df.index = dtidx
+    
     # Up-sample
     df = df.resample(resolution).pad()
 

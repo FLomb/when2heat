@@ -5,6 +5,7 @@ import geopandas as gpd
 from netCDF4 import Dataset, num2date
 from shapely.geometry import Point
 
+from scripts.misc import get_alpha2
 
 def temperature(input_path, year_start, year_end, param):
 
@@ -107,3 +108,24 @@ def cop_parameters(input_path):
 
     file = os.path.join(input_path, 'cop', 'cop_parameters.csv')
     return pd.read_csv(file, sep=';', decimal=',', header=0, index_col=0).apply(pd.to_numeric, downcast='float')
+
+
+def shapes(input_path):
+    shapes = gpd.read_file(os.path.join(input_path, 'units.geojson'))
+    shapes['country_code'] = shapes.country_code.map(get_alpha2)
+    return shapes
+
+def nuts3_yearly_demand(input_path, regions, custom_clusters):
+    yearly_demand = pd.read_csv('input/nuts3_yearly_demand.csv', sep=';', usecols=['COUNTRY_CODE','NUTS_LEVEL','NUTS_CODE','Residential_Buildings_2012','Buildings_Private_Service_Sector_2012','Public_Buildings_2012'])
+    nuts3_yearly_demand = yearly_demand[yearly_demand['NUTS_LEVEL']==3]
+    nuts3_yearly_demand['heat_tot_yearly'] = nuts3_yearly_demand[['Residential_Buildings_2012','Buildings_Private_Service_Sector_2012','Public_Buildings_2012']].sum(axis=1)
+    nuts3_yearly_demand = nuts3_yearly_demand.drop(['Residential_Buildings_2012','Buildings_Private_Service_Sector_2012','Public_Buildings_2012'], axis=1)
+    
+    custom_clusters = pd.read_csv('input/custom_clusters.csv', sep=';', index_col=0, usecols=['Country', 'NUTS3', 'Source', 'EuroSPORES'])
+
+    for nuts3 in nuts3_yearly_demand
+    for reg in regions['id']:
+        custom_clusters['heat_tot_yearly'] 
+
+    return nuts3_yearly_demand
+

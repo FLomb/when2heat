@@ -129,7 +129,7 @@ def hourly(daily_df, classes, parameters):
     return results.swaplevel('building', 'country', axis=1)
 
 
-def finishing(df, mapped_population, building_database):
+def finishing(df, mapped_population, building_database, regions):
 
     # Single- and multi-family houses are aggregated assuming a ratio of 70:30
     # Transforming to heat demand assuming an average conversion efficiency of 0.9
@@ -142,8 +142,10 @@ def finishing(df, mapped_population, building_database):
     results = []
     for country, population in mapped_population.items():
 
+        macro_country = regions.loc[regions.id == country]['country_code'].values[0]
+
         # Localize Timestamps (including daylight saving time correction)
-        df_country = localize(df[country], country)
+        df_country = localize(df[macro_country], macro_country)
 
         normalized = []
         absolute = []
