@@ -116,7 +116,7 @@ def shapes(input_path):
     shapes['country_code'] = shapes.country_code.map(get_alpha2)
     return shapes
 
-def nuts3_yearly_demand(input_path, regions, custom_clusters):
+def custom_shape_yearly_demand(input_path, regions, custom_clusters):
     yearly_demand = pd.read_csv('input/nuts3_yearly_demand.csv', sep=';', index_col=0)
     nuts3_yearly_demand = yearly_demand[yearly_demand['NUTS_LEVEL']==3]
     nuts0_yearly_demand = yearly_demand[yearly_demand['NUTS_LEVEL']==0]
@@ -132,6 +132,5 @@ def nuts3_yearly_demand(input_path, regions, custom_clusters):
         nuts3_equivalent = custom_clusters[custom_clusters['EuroSPORES']==reg]['NUTS3']
         regions_heat['yearly_heat'].loc[reg] = nuts3_yearly_demand[nuts3_yearly_demand['NUTS_CODE'].isin(nuts3_equivalent.values)]['Total_heat_2012'].sum()
         regions_heat['national_share'].loc[reg] =  regions_heat['yearly_heat'].loc[reg] / nuts0_yearly_demand.loc[country_code]['Total_heat_2012']
-        
-    return nuts3_yearly_demand
 
+    return regions_heat
