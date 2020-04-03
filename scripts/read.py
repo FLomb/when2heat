@@ -2,6 +2,7 @@
 import os
 import pandas as pd
 import geopandas as gpd
+import copy
 from netCDF4 import Dataset, num2date
 from shapely.geometry import Point
 
@@ -115,17 +116,21 @@ def shapes(input_path):
     shapes['country_code'] = shapes.country_code.map(get_alpha2)
     return shapes
 
-def nuts3_yearly_demand(input_path, regions, custom_clusters):
-    yearly_demand = pd.read_csv('input/nuts3_yearly_demand.csv', sep=';', usecols=['COUNTRY_CODE','NUTS_LEVEL','NUTS_CODE','Residential_Buildings_2012','Buildings_Private_Service_Sector_2012','Public_Buildings_2012'])
+def custom_shape_yearly_demand(input_path, regions, custom_clusters):
+    yearly_demand = pd.read_csv('input/nuts3_yearly_demand.csv', sep=';', index_col=0)
     nuts3_yearly_demand = yearly_demand[yearly_demand['NUTS_LEVEL']==3]
-    nuts3_yearly_demand['heat_tot_yearly'] = nuts3_yearly_demand[['Residential_Buildings_2012','Buildings_Private_Service_Sector_2012','Public_Buildings_2012']].sum(axis=1)
-    nuts3_yearly_demand = nuts3_yearly_demand.drop(['Residential_Buildings_2012','Buildings_Private_Service_Sector_2012','Public_Buildings_2012'], axis=1)
+    nuts0_yearly_demand = yearly_demand[yearly_demand['NUTS_LEVEL']==0]
     
-    custom_clusters = pd.read_csv('input/custom_clusters.csv', sep=';', index_col=0, usecols=['Country', 'NUTS3', 'Source', 'EuroSPORES'])
+    custom_clusters = pd.read_csv('input/custom_clusters.csv', sep=';', index_col=0).astype('str')
 
-    for nuts3 in nuts3_yearly_demand
+    regions_heat = copy.deepcopy(regions)[['id','country_code']].set_index('id')
+    regions_heat['yearly_heat'] = 0
+    regions_heat['national_share'] = 0
+    
     for reg in regions['id']:
-        custom_clusters['heat_tot_yearly'] 
+        country_code = regions[regions['id'] == reg]['country_code'].values[0]
+        nuts3_equivalent = custom_clusters[custom_clusters['EuroSPORES']==reg]['NUTS3']
+        regions_heat['yearly_heat'].loc[reg] = nuts3_yearly_demand[nuts3_yearly_demand['NUTS_CODE'].isin(nuts3_equivalent.values)]['Total_heat_2012'].sum()
+        regions_heat['national_share'].loc[reg] =  regions_heat['yearly_heat'].loc[reg] / nuts0_yearly_demand.loc[country_code]['Total_heat_2012']
 
-    return nuts3_yearly_demand
-
+    return regions_heat

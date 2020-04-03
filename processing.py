@@ -16,16 +16,9 @@ import scripts.cop as cop
 import scripts.write as write
 import scripts.metadata as metadata
 
-# get_ipython().run_line_magic('load_ext', 'autoreload')
-# get_ipython().run_line_magic('autoreload', '2')
-# get_ipython().run_line_magic('matplotlib', 'inline')
-
 # %%
 version = '2019-08-06'
 changes = 'Minor revisions'
-
-# %% [markdown]
-# ## Make directories
 
 # %%
 home_path = os.path.realpath('.')
@@ -37,11 +30,8 @@ output_path = os.path.join(home_path, 'output', version)
 for path in [input_path, interim_path, output_path]:
     os.makedirs(path, exist_ok=True)
 
-# %% [markdown]
-# ## Select geographical and temporal scope
-
 # %%
-all_countries = ['AT'] # available
+all_countries = ['AT','LU','CH','DE'] # available
 regions = read.shapes(input_path)
 regions = regions.loc[regions.country_code.isin(all_countries)]
 
@@ -49,7 +39,7 @@ regions = regions.loc[regions.country_code.isin(all_countries)]
 year_start = 2008
 year_end = 2009
 
-# %% [markdown]
+# %%
 # ## Set ECMWF access key
 # In the following, this notebook downloads weather data from the ECMWF server. For accessing this server, follow the steps below:
 # 1.  Register at https://apps.ecmwf.int/registration/.
