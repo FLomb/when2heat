@@ -9,5 +9,6 @@ dependencies:
   - pandas=0.23.4
   - python=3.7.2
   - pyyaml
+  - pycountry
   - pip:
     - ecmwf-api-client==1.4.2

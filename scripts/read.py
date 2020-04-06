@@ -116,17 +116,18 @@ def shapes(input_path):
     shapes['country_code'] = shapes.country_code.map(get_alpha2)
     return shapes
 
+
 def custom_shape_yearly_demand(input_path, regions, custom_clusters):
     yearly_demand = pd.read_csv('input/nuts3_yearly_demand.csv', sep=';', index_col=0)
     nuts3_yearly_demand = yearly_demand[yearly_demand['NUTS_LEVEL']==3]
     nuts0_yearly_demand = yearly_demand[yearly_demand['NUTS_LEVEL']==0]
-    
+
     custom_clusters = pd.read_csv('input/custom_clusters.csv', sep=';', index_col=0).astype('str')
 
     regions_heat = copy.deepcopy(regions)[['id','country_code']].set_index('id')
     regions_heat['yearly_heat'] = 0
     regions_heat['national_share'] = 0
-    
+
     for reg in regions['id']:
         country_code = regions[regions['id'] == reg]['country_code'].values[0]
         nuts3_equivalent = custom_clusters[custom_clusters['EuroSPORES']==reg]['NUTS3']

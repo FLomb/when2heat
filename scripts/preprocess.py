@@ -53,7 +53,7 @@ def map_population(input_path, regions, interim_path, plot=True):
                     gdf, regions.loc[[region[0]]], how="left", op='within'
                 )
                 weather_grid_points = gpd.sjoin(
-                    region_points.dropna().drop('index_right', axis=1), 
+                    region_points.dropna().drop('index_right', axis=1),
                     weather_grid, how="left", op='within'
                 )
 
@@ -69,12 +69,12 @@ def map_population(input_path, regions, interim_path, plot=True):
             s = pd.read_pickle(file)
             print('{} already exists and is read from disk.'.format(file))
 
-        mapped_population[region] = s
+        mapped_population[region[1].id] = s
 
     if plot:
         print('Plot of the re-mapped population data of {} (first selected country) '
-              'for visual inspection:'.format(regions.id[0]))
-        gdf = gpd.GeoDataFrame(mapped_population[regions.id[0]], columns=['TOT_P'])
+              'for visual inspection:'.format(regions.id.values[0]))
+        gdf = gpd.GeoDataFrame(mapped_population[regions.id.values[0]], columns=['TOT_P'])
         gdf['geometry'] = gdf.index.map(lambda i: Point(reversed(i)))
         gdf.plot(column='TOT_P')
 
@@ -141,7 +141,7 @@ def temperature(input_path, year_start, year_end, mapped_population):
 
 #     dtidx = pd.date_range(str(df.index[0]),str(df.index[-1]), freq=freq)
 #     df.index = dtidx
-    
+
 #     # Up-sample
 #     df = df.resample(resolution).pad()
 
